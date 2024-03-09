@@ -15,7 +15,6 @@ import DatabaseConnection from "../src/infra/database/DatabaseConnection";
 import UpdatePosition from "../src/application/usecase/UpdatePosition";
 import PositionRepositoryDatabase from "../src/infra/repository/PositionRepositoryDatabase";
 
-
 let signup: Signup;
 let getAccount: GetAccount;
 let requestRide: RequestRide;
@@ -24,6 +23,7 @@ let acceptRide: AcceptRide;
 let startRide: StartRide;
 let databaseConnection: DatabaseConnection;
 let updatePosition: UpdatePosition;
+let finishRide: FinishRide;
 
 beforeEach(() => {
 	databaseConnection = new PgPromiseAdapter();
@@ -38,6 +38,7 @@ beforeEach(() => {
 	acceptRide = new AcceptRide(rideDAO, accountDAO);
 	startRide = new StartRide(rideDAO);
 	updatePosition =  new UpdatePosition(rideDAO, positionRepository);
+	finishRide = new FinishRide(rideDAO, positionRepository);
 })
 
 test("Deve iniciar uma corrida", async function () {
@@ -87,9 +88,14 @@ test("Deve iniciar uma corrida", async function () {
 		long: -48.522234807851476
 	}
 	await updatePosition.execute(inputUpdatePosition2);
+	const inputFinishRide = {
+		rideId: outputRequestRide.rideId
+	}
+	await finishRide.execute(inputFinishRide);
 	const outputGetRide = await getRide.execute(outputRequestRide.rideId);
-	expect(outputGetRide.status).toBe("in_progress");
+	expect(outputGetRide.status).toBe("completed");
 	expect(outputGetRide.distance).toBe(10);
+	expect(outputGetRide.fare).toBe(21);
 });
 
 afterEach(async () => {
