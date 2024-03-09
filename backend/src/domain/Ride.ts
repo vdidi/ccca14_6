@@ -1,10 +1,13 @@
 import crypto from "crypto";
 import RideStatus, { RequestedStatus, RideStatusFactory } from "./RideStatus";
 import Position from "./Position";
+import Coord from "./Coord";
+import DistanceCalculator from "./DistanceCalculator";
 
 // Entity DDD
 export default class Ride {
     status: RideStatus;
+	lastPosition?: Coord;
 
     constructor (readonly rideId: string, readonly passengerId: string, private driverId: string, status: string, readonly date: Date, readonly fromLat: number, readonly fromLong: number, readonly toLat: number, readonly toLong: number, private fare: number = 0, private distance: number = 0) {
         this.status = RideStatusFactory.create(status, this);
@@ -27,14 +30,20 @@ export default class Ride {
 		this.status.start();
 	}
 
-	finish (positions: Position[]) {
-		this.fare = distance * 2.1;
-		this.distance = distance;
+	finish () {
+		this.fare = this.distance * 2.1;
 		this.status.finish();
 	}
 
+	updatePosition (position: Position) {
+		if (this.lastPosition) {
+			this.distance += DistanceCalculator.calculate(this.lastPosition, position.coord);
+		}
+		this.lastPosition = position.coord;
+	}
+
 	getStatus () {
-		return this.status;
+		return this.status.value;
 	}
 
 	getDriverId () {
