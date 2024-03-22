@@ -14,6 +14,7 @@ import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
 import DatabaseConnection from "../src/infra/database/DatabaseConnection";
 import UpdatePosition from "../src/application/usecase/UpdatePosition";
 import PositionRepositoryDatabase from "../src/infra/repository/PositionRepositoryDatabase";
+import FinishRide from "../src/application/usecase/FinishRide";
 
 let signup: Signup;
 let getAccount: GetAccount;
@@ -34,7 +35,7 @@ beforeEach(() => {
 	signup = new Signup(accountDAO, logger);
 	getAccount = new GetAccount(accountDAO);
 	requestRide = new RequestRide(rideDAO, accountDAO, logger);
-	getRide = new GetRide(rideDAO, logger);
+	getRide = new GetRide(rideDAO, positionRepository, logger);
 	acceptRide = new AcceptRide(rideDAO, accountDAO);
 	startRide = new StartRide(rideDAO);
 	updatePosition =  new UpdatePosition(rideDAO, positionRepository);

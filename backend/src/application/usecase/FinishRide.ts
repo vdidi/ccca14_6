@@ -11,15 +11,12 @@ export default class FinishRide {
 		const ride = await this.rideRepository.getById(input.rideId);
 		if (!ride) throw new Error("Ride not found");
 		if (ride.getStatus() !== "in_progress") throw new Error("To update position ride must be in progress");
-		const positions = await this.positionRepository.listByRideId(input.rideId);
-		ride.finish(positions);
+		ride.finish();
 		await this.rideRepository.update(ride);
 	}
 
 }
 
 type Input = {
-	rideId: string,
-	lat: number,
-	long: number
+	rideId: string
 }

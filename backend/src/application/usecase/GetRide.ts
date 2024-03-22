@@ -15,7 +15,9 @@ export default class GetRide {
 			rideId: ride.rideId,
 			status: ride.getStatus(),
 			driverId: ride.getDriverId(),
-			passengerId: ride.passengerId
+			passengerId: ride.passengerId,
+			distance: ride.getDistance(),
+			fare: ride.getFare()
 		};
 	}
 
@@ -25,5 +27,7 @@ type Output = {
 	rideId: string,
 	status: string,
 	driverId: string,
-	passengerId: string
+	passengerId: string,
+	distance?: number,
+	fare?: number
 }

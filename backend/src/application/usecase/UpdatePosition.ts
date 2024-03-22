@@ -14,7 +14,7 @@ export default class UpdatePosition {
 		const position = Position.create(input.rideId, input.lat, input.long);
 		await this.positionRepository.save(position);
 		ride.updatePosition(position);
-		await this.rideRepository.save(ride);
+		await this.rideRepository.update(ride);
 	}
 
 }

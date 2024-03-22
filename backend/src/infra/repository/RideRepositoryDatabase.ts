@@ -1,6 +1,7 @@
 import pgp from "pg-promise";
 import RideRepository from "../../application/repository/RideRepository";
 import Ride from "../../domain/Ride";
+import Coord from "../../domain/Coord";
 
 export default class RideRepositoryDatabase implements RideRepository {
 	
@@ -14,6 +15,11 @@ export default class RideRepositoryDatabase implements RideRepository {
 		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
 		const [ride] = await connection.query("select * from cccat14.ride where ride_id = $1", [rideId]);
 		await connection.$pool.end();
+		if (!ride) return;
+		let lastPosition = undefined;
+		if (ride.last_lat && ride.last_long) {
+			lastPosition = new Coord(parseFloat(ride.last_lat), parseFloat(ride.last_long));
+		}
 		return new Ride(ride.rideId, ride.passengerId, ride.driverId, ride.status, ride.date, parseFloat(ride.fromLat), parseFloat(ride.fromLong), parseFloat(ride.toLat), parseFloat(ride.toLong), parseFloat(ride.fare), parseFloat(ride.distance));
 	}
 	
@@ -37,7 +43,7 @@ export default class RideRepositoryDatabase implements RideRepository {
 
 	async update(ride: Ride) {
 		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
-		await connection.query("update cccat14.ride set status = $1, driver_id = $2, distance = $3, fare = $4, last_lat = $5, last_long = $6 where ride_id = $7", [ride.getStatus(), ride.getDriverId(), ride.getDistance(), ride.getFare(), ride.lastPosition?.lat, ride.lastPosition?.long, ride.rideId]);
+		await connection.query("update cccat14.ride set status = $1, driver_id = $2, distance = $3, fare = $4, last_lat = $5, last_long = $6 where ride_id = $7", [ride.getStatus(), ride.getDriverId(), ride.getDistance(), ride.getFare(), ride.getLastPosition()?.lat, ride.getLastPosition()?.long, ride.rideId]);
 		await connection.$pool.end();
 	}
 }
