@@ -27,4 +27,8 @@ export default class TransactionModel extends Model {
 		return new TransactionModel(transaction.transactionId, transaction.rideId, transaction.amount, transaction.date, transaction.getStatus());
 	}
 
+	getEntity () {
+		return Transaction.restore(this.transactionId, this.rideId, this.amount, this.date, this.status);
+	}
+
 }
