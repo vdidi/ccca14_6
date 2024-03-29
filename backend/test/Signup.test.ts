@@ -181,6 +181,7 @@ test("Deve criar uma conta para o passageiro com fake", async function () {
 		password: "123456"
 	};
 	const accounts: any = [];
+	// Fake
 	const accountDAO: AccountDAO = {
 		async save (account: any): Promise<void> {
 			accounts.push(account);
